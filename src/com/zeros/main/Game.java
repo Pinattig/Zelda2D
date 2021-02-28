@@ -1,9 +1,19 @@
 package com.zeros.main;
 
+import com.zeros.entities.Entity;
+import com.zeros.entities.Player;
+import com.zeros.graphics.Spritesheet;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ResourceBundle;
 
 public class Game extends Canvas implements Runnable {
 
@@ -17,11 +27,26 @@ public class Game extends Canvas implements Runnable {
     private final int gameHeight = HEIGHT*SCALE;
 
     private BufferedImage layer;
+    private List<Entity> entities;
+    private Spritesheet spritesheet;
 
+    private Player player;
+    private KeyboardPlayerInspector playerInspector;
 
-    public Game(){
+    public Game() throws IOException {
         this.setPreferredSize(new Dimension(gameWidth, gameHeight));
         layer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        spritesheet = new Spritesheet("/spritesheet-player.png");
+        entities = new ArrayList<Entity>();
+
+        player = new Player(0,0,16,20);
+        playerInspector = new KeyboardPlayerInspector(player);
+        setFocusable(true);
+        addKeyListener(playerInspector);
+
+
+        entities.add(player);
+
         initializeFrame();
     }
 
@@ -46,11 +71,21 @@ public class Game extends Canvas implements Runnable {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0,0, gameWidth, gameHeight);
 
+        for (Entity entity : entities) {
+            if(entity instanceof Player){
+                ((Player) entity).render(graphics);
+            }
+
+        }
+
         graphics = bs.getDrawGraphics();
         graphics.drawImage(layer, 0,0 , gameWidth, gameHeight, null);
         bs.show();
     }
     private void update() {
+        for (Entity entity : entities) {
+            entity.update();
+        }
     }
 
     private synchronized void start(){
@@ -76,7 +111,7 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new Game().start();
     }
 

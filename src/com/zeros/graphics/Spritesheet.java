@@ -12,7 +12,7 @@ public class Spritesheet {
         spritesheet = ImageIO.read(getClass().getResource(path));
     }
 
-    public BufferedImage getSpritsheet(int x, int y, int width, int height){
+    public BufferedImage getSprite(int x, int y, int width, int height){
         return spritesheet.getSubimage(x, y, width, height);
     }
 
